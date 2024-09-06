@@ -12,7 +12,7 @@
  * @param srcptr    [IN]    Указатель на копируемую строку
  * @return char*    Указатель на строку назначения
  */
-char *strcpy( char *destptr, const char *srcptr );
+char *mystrcpy( char *destptr, const char *srcptr );
 
 /**
  * @brief Функция копирует первые num символов из строки srcptr в строку destptr. Если конец строки srcptr (символ конца строки ) достигнут прежде, чем были скопированы num символов, к скопированным символам в конец строки destptr добавляется нуль-символ, после чего, строка считается скопированной.
@@ -22,19 +22,19 @@ char *strcpy( char *destptr, const char *srcptr );
  * @param   num         [IN]    Максимальное количество копируемых символов строки srcptr.
  * @return char*    Указатель на строку назначения.
  */
-char * strncpy( char * destptr, const char * srcptr, size_t num );
-char * strcat( char * destptr, const char * srcptr );
-const char * strchr( const char * string, int symbol );
-char * strncat( char * destptr, char * srcptr, size_t num );
-size_t strlen( const char * string );
-char* strdup (const char *src);
+char * mystrncpy( char * destptr, const char * srcptr, size_t num );
+char * mystrcat( char * destptr, const char * srcptr );
+const char * mystrchr( const char * string, int symbol );
+char * mystrncat( char * destptr, char * srcptr, size_t num );
+size_t mystrlen( const char * string );
+char* mystrdup (const char *src);
 int myputs(const char *str);
 char *myfgets(char *str, int num, FILE *stream);
 int getline(char str[], int lim);
-const char * strstr( const char * string1, const char * string2 );
-int strcmp(const char * firststring, const char * secondstring);
+const char * mystrstr( const char * string1, const char * string2 );
+int mystrcmp(const char * firststring, const char * secondstring);
 
 unsigned int * prefixFunction(const char * str, size_t len);
-const char * strstr_kmp( const char * text, const char * sample );
+const char * mystrstr_kmp( const char * text, const char * sample );
 
 #endif

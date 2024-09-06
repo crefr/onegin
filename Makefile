@@ -12,17 +12,23 @@ CFLAGS = -c -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-
 		 -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings -Werror=vla -D_DEBUG -D_EJUDGE_CLIENT_SIDE				\
 		 -I./$(HEADDIR)
 
-$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o
-	$(CC) $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o -o $(FILENAME)
+$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)debug.o
+	$(CC) $^ -o $@
 
-$(OBJDIR)main.o: $(SRCDIR)main.cpp $(HEADDIR)mystring.h $(HEADDIR)sorting.h
-	$(CC) $(CFLAGS) $(SRCDIR)main.cpp -o $(OBJDIR)main.o
+$(OBJDIR)main.o: $(SRCDIR)main.cpp $(HEADDIR)mystring.h $(HEADDIR)sorting.h $(HEADDIR)onegin.h
+	$(CC) $(CFLAGS) $< -o $@
 
 $(OBJDIR)mystring.o: $(SRCDIR)mystring.cpp $(HEADDIR)mystring.h
-	$(CC) $(CFLAGS) $(SRCDIR)mystring.cpp -o $(OBJDIR)mystring.o
+	$(CC) $(CFLAGS) $< -o $@
 
-$(OBJDIR)sorting.o: $(SRCDIR)sorting.cpp $(HEADDIR)sorting.h
-	$(CC) $(CFLAGS) $(SRCDIR)sorting.cpp -o $(OBJDIR)sorting.o
+$(OBJDIR)sorting.o: $(SRCDIR)sorting.cpp $(HEADDIR)sorting.h $(HEADDIR)mystring.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJDIR)onegin.o: $(SRCDIR)onegin.cpp $(HEADDIR)onegin.h $(HEADDIR)mystring.h
+	$(CC) $(CFLAGS) $< -o $@
+
+$(OBJDIR)debug.o: $(SRCDIR)debug.cpp $(HEADDIR)debug.h
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	rm $(OBJDIR)*
