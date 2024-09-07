@@ -44,3 +44,22 @@ void selectionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
     }
     free(temp);
 }
+
+void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+{
+    void * key  = calloc(1, elemsize);
+    for(size_t current = 1; current < len; current++){
+
+        void * curel = (char *)base + current * elemsize;
+        memcpy(key, curel, elemsize);
+
+        size_t index = current;
+        void * prevel = NULL;
+        while(index > 0  && cmp(key, (prevel = (char *)base + (index - 1) * elemsize)) <= 0){
+            memcpy((char *) prevel + elemsize, prevel, elemsize);
+            index--;
+        }
+        memcpy((char *) prevel, key, elemsize);
+    }
+    free(key);
+}
