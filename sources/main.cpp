@@ -3,6 +3,7 @@
 
 #include "mystring.h"
 #include "onegin.h"
+#include "io_onegin.h"
 #include "sorting.h"
 
 int main()

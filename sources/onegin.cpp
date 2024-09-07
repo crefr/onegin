@@ -1,12 +1,10 @@
 #include <stdio.h>
-//#include <sys\stat.h>
 #include <stdlib.h>
 
 #include "mystring.h"
 #include "onegin.h"
+#include "io_onegin.h"
 #include "debug.h"
-
-//const size_t MAXLINESNUM = 1000;
 
 char ** getStrs(FILE * textfile, size_t * linenum)
 {
@@ -14,10 +12,8 @@ char ** getStrs(FILE * textfile, size_t * linenum)
     size_t textsize = ftell(textfile);
     fseek(textfile, 0, SEEK_SET);
 
-   // printf("textsize: %llu\n", textsize);
-
     char * text = (char *) calloc(textsize, sizeof(char));
-    fread(text, sizeof(char), textsize, textfile);
+    textsize = readTextFromFile(textfile, text);
 
     *linenum = 0;
     for (size_t index = 0; index < textsize; index++){
@@ -30,6 +26,7 @@ char ** getStrs(FILE * textfile, size_t * linenum)
             (*linenum)++;
         }
     }
+
     printf("linenum: %llu\n", *linenum);
 
     char ** strings = (char **) calloc(*linenum, sizeof(char *));
@@ -44,19 +41,6 @@ char ** getStrs(FILE * textfile, size_t * linenum)
     }
     text[textsize - 1] = '\0';
     return strings;
-}
-
-void printStrs(char ** strings, size_t linenum)
-{
-    for (size_t index = 0; index < linenum; index++){
-        printf("%s\n", strings[index]);
-    }
-}
-
-void printAtFile(FILE * outfile, char ** strings, size_t linenum)
-{
-    for (size_t index = 0; index < linenum; index++)
-        fprintf(outfile, "%s\n", strings[index]);
 }
 
 void delStrs(char ** text)
