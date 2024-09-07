@@ -8,11 +8,14 @@
 int main()
 {
     FILE * textfile = fopen("test.txt", "r");
+    FILE * outfile =  fopen("out.txt" , "w");
+
     size_t linenum = 0;
     char ** strings = getStrs(textfile, &linenum);
 
-    bubbleSort(strings, linenum);
-    printStrs (strings, linenum);
+    bubbleSort(strings, sizeof(char *), linenum, pointerStrCmp);
+    //printStrs (strings, linenum);
+    printAtFile(outfile, strings, linenum);
 
     fclose(textfile);
     delStrs(strings);

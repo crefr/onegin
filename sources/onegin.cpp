@@ -21,25 +21,28 @@ char ** getStrs(FILE * textfile, size_t * linenum)
 
     *linenum = 0;
     for (size_t index = 0; index < textsize; index++){
-        //printf("now: <%c>\n", text[index]);
         if (text[index] == '\n'){
-            (*linenum)++;
+            if (index > 0 && text[index - 1] == '\r')
+                text[index - 1] = '\0';
+
             text[index] = '\0';
+
+            (*linenum)++;
         }
     }
-    //printf("linenum: %llu\n", *linenum);
+    printf("linenum: %llu\n", *linenum);
 
-    char ** strings= (char **) calloc (*linenum, sizeof(char *));
+    char ** strings = (char **) calloc(*linenum, sizeof(char *));
     strings[0] = text;
 
     size_t curLine = 0;
-    for(size_t index = 0; index < textsize; index++)
-    {
+    for(size_t index = 0; index < textsize - 1; index++){
         if (text[index] == '\0'){
             curLine++;
             strings[curLine] = text + index + 1;
         }
     }
+    text[textsize - 1] = '\0';
     return strings;
 }
 
@@ -47,12 +50,24 @@ void printStrs(char ** strings, size_t linenum)
 {
     for (size_t index = 0; index < linenum; index++){
         printf("%s\n", strings[index]);
-        //debugPrint(strings[index]);
     }
+}
+
+void printAtFile(FILE * outfile, char ** strings, size_t linenum)
+{
+    for (size_t index = 0; index < linenum; index++)
+        fprintf(outfile, "%s\n", strings[index]);
 }
 
 void delStrs(char ** text)
 {
     //free(text[0]);
     free(text);
+}
+
+int pointerStrCmp(const void * firstpointer, const void * secondpointer)
+{
+    const char * firststring  = *((const char **) firstpointer);
+    const char * secondstring = *((const char **) secondpointer);
+    return mystrcmp(firststring, secondstring);
 }

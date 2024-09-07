@@ -33,6 +33,7 @@ char *myfgets(char *str, int num, FILE *stream);
 int getline(char str[], int lim);
 const char * mystrstr( const char * string1, const char * string2 );
 int mystrcmp(const char * firststring, const char * secondstring);
+//int mystrcmp(const void * first, const void * second);
 
 unsigned int * prefixFunction(const char * str, size_t len);
 const char * mystrstr_kmp( const char * text, const char * sample );

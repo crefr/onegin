@@ -185,6 +185,9 @@ int mystrcmp(const char * firststring, const char * secondstring)
     assert(firststring  != NULL);
     assert(secondstring != NULL);
 
+    // printf("first:  <%s>\n", firststring);
+    // printf("second: <%s>\n", secondstring);
+
     //printf("strcmp\n");
 
     size_t i = 0;
@@ -197,3 +200,22 @@ int mystrcmp(const char * firststring, const char * secondstring)
     }
     return firststring[i] - secondstring[j];
 }
+
+// int mystrcmp(const void * first, const void * second)
+// {
+//     assert(first  != NULL);
+//     assert(second != NULL);
+//
+//     const char * firststring  = (const char *) first;
+//     const char * secondstring = (const char *) second;
+//
+//     size_t i = 0;
+//     size_t j = 0;
+//
+//     while(firststring[i] != '\0' && firststring[i] == secondstring[j])
+//     {
+//         i++;
+//         j++;
+//     }
+//     return firststring[i] - secondstring[j];
+// }
