@@ -14,7 +14,9 @@ int main()
     size_t linenum = 0;
     char ** strings = getStrs(textfile, &linenum);
 
-    bubbleSort(strings, sizeof(char *), linenum, pointerStrCmp);
+    selectionSort(strings, sizeof(char *), linenum, pointerStrCmp);
+    //bubbleSort(strings, sizeof(char *), linenum, pointerStrCmp);
+
     //printStrs (strings, linenum);
     printAtFile(outfile, strings, linenum);
 
