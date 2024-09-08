@@ -49,17 +49,46 @@ void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
 {
     void * key  = calloc(1, elemsize);
     for(size_t current = 1; current < len; current++){
+        char * currel = (char *)base + current * elemsize;
+        memcpy(key, currel, elemsize);
 
-        void * curel = (char *)base + current * elemsize;
-        memcpy(key, curel, elemsize);
-
-        size_t index = current;
-        void * prevel = NULL;
-        while(index > 0  && cmp(key, (prevel = (char *)base + (index - 1) * elemsize)) <= 0){
-            memcpy((char *) prevel + elemsize, prevel, elemsize);
-            index--;
+        char * element = currel;
+        if (cmp(currel, element - elemsize) < 0){
+            while(element > base && cmp(key, element - elemsize) < 0){
+                memcpy(element, element - elemsize, elemsize);
+                element -= elemsize;
+            }
+            memcpy(element, key, elemsize);
         }
-        memcpy((char *) prevel, key, elemsize);
     }
     free(key);
+}
+
+void shellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+{
+    const size_t step[] = {1, 8, 23, 77, 281, 1073, 4193, 16577, 65921, 262913, 1050113, 4197377, 16783361, 67121153, 268460033, 1073790977, 4295065601};
+    const size_t numsteps = sizeof(step) / sizeof(step[0]);
+
+    for(long long stepindex = numsteps - 1; stepindex >= 0; stepindex--){
+        if (step[stepindex] >= len)
+            continue;
+        size_t newlen = len / step[stepindex];
+        void * newbase = calloc(newlen + 1, elemsize);
+        for(size_t offset = 0; offset < step[stepindex]; offset++){
+            for (size_t index = 0; index * step[stepindex] + offset < len; index++){
+                void * elfrombase    = (char *)base + (offset + index * step[stepindex]) * elemsize;
+                void * elfromnewbase = (char *)newbase + index * elemsize;
+                memcpy(elfromnewbase, elfrombase, elemsize);
+            }
+
+            insertionSort(newbase, elemsize, newlen, cmp);
+
+            for (size_t index = 0; index * step[stepindex] + offset < len; index++){
+                void * elfrombase    = (char *)base + (offset + index * step[stepindex]) * elemsize;
+                void * elfromnewbase = (char *)newbase + index * elemsize;
+                memcpy(elfrombase, elfromnewbase, elemsize);
+            }
+        }
+        free(newbase);
+    }
 }

@@ -6,6 +6,33 @@
 #include "io_onegin.h"
 #include "debug.h"
 
+// char ** getStrs(FILE* textfile, size_t linenum)
+// {
+//     fseek(textfile, 0, SEEK_END);
+//     size_t textsize = ftell(textfile);
+//     fseek(textfile, 0, SEEK_SET);
+//
+//     char * text = (char *) calloc(textsize, sizeof(char));
+//
+//     int curChar = 0;
+//     size_t index = 0;
+//     while((curChar = fgetc(textfile)) != EOF){
+//         switch(curChar){
+//             case '\n':
+//                 text[index] = '\0';
+//                 (*linenum)++;
+//                 break;
+//             case '\r':
+//                 break;
+//             default:
+//                 text[index] = (char) curChar;
+//                 break;
+//         }
+//         index++;
+//     }
+//     textsize = index;
+// }
+
 char ** getStrs(FILE * textfile, size_t * linenum)
 {
     fseek(textfile, 0, SEEK_END);
@@ -13,23 +40,10 @@ char ** getStrs(FILE * textfile, size_t * linenum)
     fseek(textfile, 0, SEEK_SET);
 
     char * text = (char *) calloc(textsize, sizeof(char));
-    textsize = readTextFromFile(textfile, text);
-
-    *linenum = 0;
-    for (size_t index = 0; index < textsize; index++){
-        if (text[index] == '\n'){
-            if (index > 0 && text[index - 1] == '\r')
-                text[index - 1] = '\0';
-
-            text[index] = '\0';
-
-            (*linenum)++;
-        }
-    }
-
+    textsize = readTextFromFile(textfile, text, linenum);
     printf("linenum: %llu\n", *linenum);
 
-    char ** strings = (char **) calloc(*linenum, sizeof(char *));
+    char ** strings = (char **) calloc(*linenum * 2, sizeof(char *));
     strings[0] = text;
 
     size_t curLine = 0;
