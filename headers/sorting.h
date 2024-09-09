@@ -7,5 +7,7 @@ void bubbleSort(void *base, size_t elemsize, size_t len, int (*cmp)(const void *
 void selectionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
 void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
 void shellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
+void shellSort_old(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
+void quickSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
 
 #endif

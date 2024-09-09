@@ -2,8 +2,24 @@
 #include <stdio.h>
 #include <string.h>
 
+#define NDEBUG
+#include <assert.h>
+
 #include "sorting.h"
 #include "mystring.h"
+#include "debug.h"
+
+void dprintf(const char * fmt, ...);
+void dprintf(const char * fmt, ...)
+{
+    #ifndef NDEBUG
+        va_list p = {};
+        va_start(p, fmt);
+        vprintf(fmt, p);
+        va_end(p);
+    #endif
+}
+
 
 void swapByPtr(void * el1, void * el2, void * temp, size_t elemsize)
 {
@@ -16,6 +32,8 @@ void swapByPtr(void * el1, void * el2, void * temp, size_t elemsize)
 
 void bubbleSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
 {
+    assert(base != NULL);
+    assert(cmp  != NULL);
     void * temp = calloc(1, elemsize);
     for (size_t unsorted = len; unsorted > 1; unsorted--)
         for (size_t j = 0; j < unsorted - 1; j++){
@@ -29,6 +47,8 @@ void bubbleSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void 
 
 void selectionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
 {
+    assert(base != NULL);
+    assert(cmp  != NULL);
     void * temp = calloc(1, elemsize);
     size_t minindex = 0;
     for (size_t start = 0; start < len - 1; start++){
@@ -47,14 +67,15 @@ void selectionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
 
 void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
 {
+    assert(base != NULL);
+    assert(cmp  != NULL);
     void * key  = calloc(1, elemsize);
     for(size_t current = 1; current < len; current++){
         char * currel = (char *)base + current * elemsize;
-        memcpy(key, currel, elemsize);
-
         char * element = currel;
         if (cmp(currel, element - elemsize) < 0){
-            while(element > base && cmp(key, element - elemsize) < 0){
+            memcpy(key, currel, elemsize);
+            while(element - elemsize >= base && cmp(key, element - elemsize) < 0){
                 memcpy(element, element - elemsize, elemsize);
                 element -= elemsize;
             }
@@ -64,7 +85,48 @@ void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
     free(key);
 }
 
+static void insforShellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *), size_t step, size_t offset, void * temp);
 void shellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+{
+    void * temp = calloc(1, elemsize);
+    assert(base != NULL);
+    assert(cmp  != NULL);
+    const size_t step[] = {1, 8, 23, 77, 281, 1073, 4193, 16577, 65921, 262913, 1050113, 4197377, 16783361, 67121153, 268460033, 1073790977, 4295065601};
+    const size_t numsteps = sizeof(step) / sizeof(step[0]);
+
+    for(long long stepindex = numsteps - 1; stepindex >= 0; stepindex--){
+        if (step[stepindex] >= len)
+            continue;
+        for(size_t offset = 0; offset < step[stepindex]; offset++){
+            insforShellSort(base, elemsize, len, cmp, step[stepindex], offset, temp);
+        }
+    }
+    free(temp);
+}
+
+static void insforShellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *), size_t step, size_t offset, void * temp)
+{
+    assert(base != NULL);
+    assert(cmp  != NULL);
+
+    //void * key  = calloc(1, elemsize);
+    size_t onemove = step * elemsize;
+    for(size_t current = offset + step; current < len; current += step){
+        char * currel = (char *)base + current * elemsize;
+        char * element = currel;
+        if (cmp(currel, element - elemsize) < 0){
+            memcpy(temp, currel, elemsize);
+            while(element - onemove >= ((char *)base) + offset * elemsize && cmp(temp, element - onemove) < 0){
+                memcpy(element, element - onemove, elemsize);
+                element -= onemove;
+            }
+            memcpy(element, temp, elemsize);
+        }
+    }
+    //free(key);
+}
+
+void shellSort_old(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
 {
     const size_t step[] = {1, 8, 23, 77, 281, 1073, 4193, 16577, 65921, 262913, 1050113, 4197377, 16783361, 67121153, 268460033, 1073790977, 4295065601};
     const size_t numsteps = sizeof(step) / sizeof(step[0]);
@@ -92,3 +154,49 @@ void shellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *
         free(newbase);
     }
 }
+
+void quickSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+{
+    if (len <= 1)
+        return;
+
+    void * temp = calloc(1, elemsize);
+    if (len == 2){
+        if (cmp(base, (char *) base + elemsize) > 0)
+            swapByPtr(base,(char *) base + elemsize, temp, elemsize);
+        free(temp);
+        return;
+    }
+
+    dprintf("len: %llu\n", len);
+    void * septemp = calloc(1, elemsize);
+
+    char * sepelem = (char *)base + ((len - 1) / 2) * elemsize;
+    memcpy(septemp, sepelem, elemsize);
+
+    char * leftelem  = (char *)base;
+    char * rightelem = (char *)base + (len - 1) * elemsize;
+    size_t sepindex = 0;
+    while(1){
+        while(cmp(leftelem, septemp) < 0)
+            leftelem += elemsize;
+        while(cmp(rightelem, septemp) > 0)
+            rightelem -= elemsize;
+        if (leftelem >= rightelem){
+            sepindex = ((size_t)rightelem - (size_t)base) / elemsize;
+            break;
+        }
+        swapByPtr(leftelem, rightelem, temp, elemsize);
+        rightelem -= elemsize;
+        leftelem  += elemsize;
+    }
+    dprintf("sepindex: %llu\n", sepindex);
+    quickSort(base, elemsize, sepindex, cmp);
+    dprintf("first!\n");
+    quickSort((char *)base + (sepindex) * elemsize, elemsize, len - sepindex - 1, cmp);
+    dprintf("second!\n");
+
+    free(septemp);
+    free(temp);
+}
+

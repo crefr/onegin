@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "debug.h"
 
@@ -10,3 +11,4 @@ void debugPrint(const char * str)
     }
     printf("\\0(0)\n");
 }
+

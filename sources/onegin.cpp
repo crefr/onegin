@@ -33,34 +33,41 @@
 //     textsize = index;
 // }
 
-char ** getStrs(FILE * textfile, size_t * linenum)
+char ** getStrs(FILE * textfile, size_t * linenum, char ** text)
 {
     fseek(textfile, 0, SEEK_END);
     size_t textsize = ftell(textfile);
     fseek(textfile, 0, SEEK_SET);
 
-    char * text = (char *) calloc(textsize, sizeof(char));
-    textsize = readTextFromFile(textfile, text, linenum);
+    *text = (char *) calloc(textsize, sizeof(char));
+    textsize = readTextFromFile(textfile, *text, linenum);
     printf("linenum: %llu\n", *linenum);
 
     char ** strings = (char **) calloc(*linenum * 2, sizeof(char *));
-    strings[0] = text;
-
+    strings[0] = *text;
+//     printf("text:       %p\n", *text);
+//     printf("strings:    %p\n", strings);
+//     printf("strings[0]: %p\n", strings[0]);
     size_t curLine = 0;
     for(size_t index = 0; index < textsize - 1; index++){
-        if (text[index] == '\0'){
+        if ((*text)[index] == '\0'){
             curLine++;
-            strings[curLine] = text + index + 1;
+            strings[curLine] = (*text) + index + 1;
         }
     }
-    text[textsize - 1] = '\0';
+
+    //printf("@strings[0]: %p\n", strings[0]);
+    (*text)[textsize - 1] = '\0';
     return strings;
 }
 
-void delStrs(char ** text)
+void delStrs(char ** strings)
 {
-    //free(text[0]);
-    free(text);
+    printf("\n\nstrings:    %p\n", strings);
+    //printf("text:       %p\n", text);
+    printf("strings[0]: %p\n", strings[0]);
+    free(strings[0]);
+    free(strings);
 }
 
 int pointerStrCmp(const void * firstpointer, const void * secondpointer)
