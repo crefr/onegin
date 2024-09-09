@@ -155,48 +155,53 @@ void shellSort_old(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
     }
 }
 
+size_t qsortPartition(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
 void quickSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
 {
     if (len <= 1)
         return;
 
-    void * temp = calloc(1, elemsize);
+
     if (len == 2){
-        if (cmp(base, (char *) base + elemsize) > 0)
+        if (cmp(base, (char *) base + elemsize) > 0){
+            void * temp = calloc(1, elemsize);
             swapByPtr(base,(char *) base + elemsize, temp, elemsize);
-        free(temp);
+            free(temp);
+        }
         return;
     }
 
     dprintf("len: %llu\n", len);
+    size_t sepindex = qsortPartition(base, elemsize, len, cmp);
+    dprintf("sepindex: %llu\n", sepindex);
+    quickSort(base, elemsize, sepindex + 1, cmp);
+    dprintf("first!\n");
+    quickSort((char *)base + (sepindex + 1) * elemsize, elemsize, len - sepindex - 1, cmp);
+    dprintf("second!\n");
+}
+
+size_t qsortPartition(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+{
+    void * temp    = calloc(1, elemsize);
     void * septemp = calloc(1, elemsize);
 
-    char * sepelem = (char *)base + ((len - 1) / 2) * elemsize;
+    void * sepelem = (char *)base + ((len - 1) / 2) * elemsize;
     memcpy(septemp, sepelem, elemsize);
 
     char * leftelem  = (char *)base;
     char * rightelem = (char *)base + (len - 1) * elemsize;
-    size_t sepindex = 0;
     while(1){
         while(cmp(leftelem, septemp) < 0)
             leftelem += elemsize;
         while(cmp(rightelem, septemp) > 0)
             rightelem -= elemsize;
         if (leftelem >= rightelem){
-            sepindex = ((size_t)rightelem - (size_t)base) / elemsize;
-            break;
+            free(septemp);
+            free(temp);
+            return ((size_t)rightelem - (size_t)base) / elemsize;
         }
         swapByPtr(leftelem, rightelem, temp, elemsize);
         rightelem -= elemsize;
         leftelem  += elemsize;
     }
-    dprintf("sepindex: %llu\n", sepindex);
-    quickSort(base, elemsize, sepindex, cmp);
-    dprintf("first!\n");
-    quickSort((char *)base + (sepindex) * elemsize, elemsize, len - sepindex - 1, cmp);
-    dprintf("second!\n");
-
-    free(septemp);
-    free(temp);
 }
-
