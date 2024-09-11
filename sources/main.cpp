@@ -11,29 +11,27 @@
 
 int main()
 {
-    FILE * textfile = fopen("test.txt", "r");
     FILE * outfile =  fopen("out.txt" , "w");
+    const char * filename = "test.txt";
 
-    size_t linenum = 0;
-    char * text = NULL;
-    char ** strings = getStrs(textfile, &linenum, &text);
+    text_t strs = {};
+    getStrs(filename, &strs);
 
     clock_t start = clock();
-    //insforShellSort(strings, sizeof(char *), linenum, pointerStrCmp, 1, 0);
-    //shellSort(strings, sizeof(char *), linenum, pointerStrCmp);
-    quickSort(strings, sizeof(char *), linenum, pointerStrCmp);
-    //shellSort_old(strings, sizeof(char *), linenum, pointerStrCmp);
-    //insertionSort(strings, sizeof(char *), linenum, pointerStrCmp);
-    //selectionSort(strings, sizeof(char *), linenum, pointerStrCmp);
-    //bubbleSort(strings, sizeof(char *), linenum, pointerStrCmp);
-    printf("time: %.2lf ms\n", (double)(clock() - start) / CLOCKS_PER_SEC * 1000);
+    //qsort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+
+    //shellSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
+    //quickSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
+    shellSort_old(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
+    //insertionSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
+    //selectionSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
+    //bubbleSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
+    double sorttime = (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
+    printf("time: %.2lf ms\n", sorttime);
 
     //printStrs (strings, linenum);
-    printAtFile(outfile, strings, linenum);
+    printAtFile(outfile, strs.strings, strs.strnum);
 
-    fclose(textfile);
-    //delStrs(strings, text);
-    free(strings);
-    free(text);
+    delStrs(&strs);
     return 0;
 }

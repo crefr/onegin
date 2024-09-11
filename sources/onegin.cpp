@@ -6,68 +6,40 @@
 #include "io_onegin.h"
 #include "debug.h"
 
-// char ** getStrs(FILE* textfile, size_t linenum)
-// {
-//     fseek(textfile, 0, SEEK_END);
-//     size_t textsize = ftell(textfile);
-//     fseek(textfile, 0, SEEK_SET);
-//
-//     char * text = (char *) calloc(textsize, sizeof(char));
-//
-//     int curChar = 0;
-//     size_t index = 0;
-//     while((curChar = fgetc(textfile)) != EOF){
-//         switch(curChar){
-//             case '\n':
-//                 text[index] = '\0';
-//                 (*linenum)++;
-//                 break;
-//             case '\r':
-//                 break;
-//             default:
-//                 text[index] = (char) curChar;
-//                 break;
-//         }
-//         index++;
-//     }
-//     textsize = index;
-// }
-
-char ** getStrs(FILE * textfile, size_t * linenum, char ** text)
+void getStrs(const char * infilename, text_t * text)
 {
-    fseek(textfile, 0, SEEK_END);
-    size_t textsize = ftell(textfile);
-    fseek(textfile, 0, SEEK_SET);
+    text->textfile = fopen(infilename, "r");
 
-    *text = (char *) calloc(textsize, sizeof(char));
-    textsize = readTextFromFile(textfile, *text, linenum);
-    printf("linenum: %llu\n", *linenum);
+    readStrsFromFile(text);
+    getStrNum(text);
 
-    char ** strings = (char **) calloc(*linenum * 2, sizeof(char *));
-    strings[0] = *text;
-//     printf("text:       %p\n", *text);
-//     printf("strings:    %p\n", strings);
-//     printf("strings[0]: %p\n", strings[0]);
-    size_t curLine = 0;
-    for(size_t index = 0; index < textsize - 1; index++){
-        if ((*text)[index] == '\0'){
-            curLine++;
-            strings[curLine] = (*text) + index + 1;
+    printf("strnum: %llu\n", text->strnum);
+    text->strings = (char **)calloc(text->strnum, sizeof(char *));
+    text->strings[0] = text->text;
+
+    size_t strindex = 1;
+    char * ptr = text->text;
+    while(*ptr != '\0'){
+        switch(*ptr){
+            case '\r':
+                *ptr = '\0';
+                break;
+            case '\n':
+                *ptr = '\0';
+                if(strindex < text->strnum)
+                    text->strings[strindex++] = ptr + 1;
+                break;
+            default:
+                break;
         }
+        ptr++;
     }
-
-    //printf("@strings[0]: %p\n", strings[0]);
-    (*text)[textsize - 1] = '\0';
-    return strings;
 }
 
-void delStrs(char ** strings)
+void delStrs(text_t * text)
 {
-    printf("\n\nstrings:    %p\n", strings);
-    //printf("text:       %p\n", text);
-    printf("strings[0]: %p\n", strings[0]);
-    free(strings[0]);
-    free(strings);
+    free(text->text);
+    free(text->strings);
 }
 
 int pointerStrCmp(const void * firstpointer, const void * secondpointer)
@@ -75,4 +47,28 @@ int pointerStrCmp(const void * firstpointer, const void * secondpointer)
     const char * firststring  = *((const char **) firstpointer);
     const char * secondstring = *((const char **) secondpointer);
     return mystrcmp(firststring, secondstring);
+}
+
+void getStrNum(text_t * text)
+{
+    char * ptr = text->text;
+    while(*ptr != '\0'){
+        if (*ptr == '\n')
+            if (*(ptr + 1) != '\0')
+                text->strnum++;
+        ptr++;
+    }
+    text->strnum++;
+}
+
+void readStrsFromFile(text_t * text)
+{
+    fseek(text->textfile, 0, SEEK_END);
+    text->textlen = ftell(text->textfile) + 1;
+    fseek(text->textfile, 0, SEEK_SET);
+
+    text->text = (char *)calloc(text->textlen, sizeof(char));
+    text->textlen = fread(text->text, sizeof(char), text->textlen, text->textfile) + 1;
+    text->text[text->textlen] = '\0';
+    fclose(text->textfile);
 }
