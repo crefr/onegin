@@ -7,8 +7,6 @@
 #include "io_onegin.h"
 #include "sorting.h"
 
-//void insforShellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *), size_t step, size_t offset);
-
 int main()
 {
     FILE * outfile =  fopen("out.txt" , "w");
@@ -16,20 +14,17 @@ int main()
 
     text_t strs = {};
     getStrs(filename, &strs);
+    sortTime(quickSort, strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
 
-    clock_t start = clock();
     //qsort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
 
-    //shellSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
-    //quickSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
-    shellSort_old(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
-    //insertionSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
-    //selectionSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
-    //bubbleSort(strs.strings, sizeof(char *), strs.strnum, pointerStrCmp);
-    double sorttime = (double)(clock() - start) / CLOCKS_PER_SEC * 1000;
-    printf("time: %.2lf ms\n", sorttime);
+    //shellSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    //quickSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    //shellSort_old(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    //insertionSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    //selectionSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    //bubbleSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
 
-    //printStrs (strings, linenum);
     printAtFile(outfile, strs.strings, strs.strnum);
 
     delStrs(&strs);

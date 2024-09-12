@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <math.h>
+#include <stdarg.h>
 
 #define NDEBUG
 #include <assert.h>
@@ -30,7 +33,7 @@ void swapByPtr(void * el1, void * el2, void * temp, size_t elemsize)
     //free(temp);
 }
 
-void bubbleSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+void bubbleSort(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     assert(base != NULL);
     assert(cmp  != NULL);
@@ -45,7 +48,7 @@ void bubbleSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void 
     free(temp);
 }
 
-void selectionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+void selectionSort(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     assert(base != NULL);
     assert(cmp  != NULL);
@@ -65,7 +68,7 @@ void selectionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
     free(temp);
 }
 
-void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+void insertionSort(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     assert(base != NULL);
     assert(cmp  != NULL);
@@ -86,7 +89,7 @@ void insertionSort(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
 }
 
 static void insforShellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *), size_t step, size_t offset, void * temp);
-void shellSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+void shellSort(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     void * temp = calloc(1, elemsize);
     assert(base != NULL);
@@ -126,7 +129,7 @@ static void insforShellSort(void * base, size_t elemsize, size_t len, int (*cmp)
     //free(key);
 }
 
-void shellSort_old(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+void shellSort_old(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     const size_t step[] = {1, 8, 23, 77, 281, 1073, 4193, 16577, 65921, 262913, 1050113, 4197377, 16783361, 67121153, 268460033, 1073790977, 4295065601};
     const size_t numsteps = sizeof(step) / sizeof(step[0]);
@@ -143,7 +146,7 @@ void shellSort_old(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
                 memcpy(elfromnewbase, elfrombase, elemsize);
             }
 
-            insertionSort(newbase, elemsize, newlen, cmp);
+            insertionSort(newbase, newlen, elemsize, cmp);
 
             for (size_t index = 0; index * step[stepindex] + offset < len; index++){
                 void * elfrombase    = (char *)base + (offset + index * step[stepindex]) * elemsize;
@@ -155,8 +158,8 @@ void shellSort_old(void * base, size_t elemsize, size_t len, int (*cmp)(const vo
     }
 }
 
-size_t qsortPartition(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *));
-void quickSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+size_t qsortPartition(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *));
+void quickSort(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     if (len <= 1)
         return;
@@ -172,15 +175,15 @@ void quickSort(void * base, size_t elemsize, size_t len, int (*cmp)(const void *
     }
 
     dprintf("len: %llu\n", len);
-    size_t sepindex = qsortPartition(base, elemsize, len, cmp);
+    size_t sepindex = qsortPartition(base, len, elemsize, cmp);
     dprintf("sepindex: %llu\n", sepindex);
-    quickSort(base, elemsize, sepindex + 1, cmp);
+    quickSort(base, sepindex + 1, elemsize, cmp);
     dprintf("first!\n");
-    quickSort((char *)base + (sepindex + 1) * elemsize, elemsize, len - sepindex - 1, cmp);
+    quickSort((char *)base + (sepindex + 1) * elemsize, len - sepindex - 1, elemsize, cmp);
     dprintf("second!\n");
 }
 
-size_t qsortPartition(void * base, size_t elemsize, size_t len, int (*cmp)(const void *, const void *))
+size_t qsortPartition(void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
     void * temp    = calloc(1, elemsize);
     void * septemp = calloc(1, elemsize);
@@ -204,4 +207,35 @@ size_t qsortPartition(void * base, size_t elemsize, size_t len, int (*cmp)(const
         rightelem -= elemsize;
         leftelem  += elemsize;
     }
+}
+
+void sortTime(sortFunction_t sort, void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
+{
+    const clock_t TESTTIME = 15 * CLOCKS_PER_SEC;
+    double sumofSqT = 0;
+    double sumofT   = 0;
+
+    void * newbase = calloc(len, elemsize);
+
+    size_t numofsorts = 0;
+    clock_t start_testing = clock();
+    while(clock() - start_testing < TESTTIME){
+        memcpy(newbase, base, elemsize * len);
+        clock_t start = clock();
+        sort(newbase, len, elemsize, cmp);
+        clock_t end = clock();
+        double sorttime = (double)(end - start) / CLOCKS_PER_SEC * 1000;
+        //printf(">>sorttime: %lg\n", sorttime);
+
+        sumofSqT += sorttime * sorttime;
+        sumofT += sorttime;
+        numofsorts++;
+    }
+    free(newbase);
+    double averageSqT = sumofSqT / numofsorts;
+    double averageT = sumofT / numofsorts;
+    double sigmaT = sqrt((averageSqT - averageT * averageT) / numofsorts);
+    double percentSigmaT = sigmaT / averageT * 100;
+
+    printf("sorting time is %lg +- %lg ms (%.1lf%%) (average of %llu measures)\n", averageT, sigmaT, percentSigmaT, numofsorts);
 }
