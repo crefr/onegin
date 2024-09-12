@@ -12,18 +12,6 @@
 #include "mystring.h"
 #include "debug.h"
 
-void dprintf(const char * fmt, ...);
-void dprintf(const char * fmt, ...)
-{
-    #ifndef NDEBUG
-        va_list p = {};
-        va_start(p, fmt);
-        vprintf(fmt, p);
-        va_end(p);
-    #endif
-}
-
-
 void swapByPtr(void * el1, void * el2, void * temp, size_t elemsize)
 {
     //void * temp = calloc(1, elemsize);
@@ -211,7 +199,7 @@ size_t qsortPartition(void * base, size_t len, size_t elemsize, int (*cmp)(const
 
 void sortTime(sortFunction_t sort, void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
-    const clock_t TESTTIME = 15 * CLOCKS_PER_SEC;
+    const clock_t TESTTIME = 3 * CLOCKS_PER_SEC;
     double sumofSqT = 0;
     double sumofT   = 0;
 
@@ -232,9 +220,9 @@ void sortTime(sortFunction_t sort, void * base, size_t len, size_t elemsize, int
         numofsorts++;
     }
     free(newbase);
-    double averageSqT = sumofSqT / numofsorts;
-    double averageT = sumofT / numofsorts;
-    double sigmaT = sqrt((averageSqT - averageT * averageT) / numofsorts);
+    double averageSqT = sumofSqT / (double)numofsorts;
+    double averageT = sumofT / (double)numofsorts;
+    double sigmaT = sqrt((averageSqT - averageT * averageT) / (double)numofsorts);
     double percentSigmaT = sigmaT / averageT * 100;
 
     printf("sorting time is %lg +- %lg ms (%.1lf%%) (average of %llu measures)\n", averageT, sigmaT, percentSigmaT, numofsorts);

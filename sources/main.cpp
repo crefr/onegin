@@ -9,23 +9,14 @@
 
 int main()
 {
-    FILE * outfile =  fopen("out.txt" , "w");
-    const char * filename = "test.txt";
+    const char * outfilename = "out.txt";
+    const char * infilename  = "test.txt";
 
     text_t strs = {};
-    getStrs(filename, &strs);
+    getStrs(infilename, &strs);
     sortTime(quickSort, strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-
-    //qsort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-
-    //shellSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-    //quickSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-    //shellSort_old(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-    //insertionSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-    //selectionSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-    //bubbleSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-
-    printAtFile(outfile, strs.strings, strs.strnum);
+    quickSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    printStrsToFile(outfilename, &strs);
 
     delStrs(&strs);
     return 0;

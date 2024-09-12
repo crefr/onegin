@@ -13,9 +13,11 @@ typedef struct text_ text_t;
 // char ** getStrs(FILE * textfile, size_t * linenum, char ** text);
 void getStrs(const char * infilename, text_t *text);
 void delStrs(text_t *text);
-int pointerStrCmp(const void * firstpointer, const void * secondpointer);
 void getStrNum(text_t * text);
 void readStrsFromFile(text_t * text);
+void findStrsInText(text_t * text);
+int pointerStrCmp(const void * firstpointer, const void * secondpointer);
+void printStrsToFile(const char * outfilename, text_t * text);
 
 
 #endif

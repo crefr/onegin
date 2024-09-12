@@ -12,8 +12,49 @@ void getStrs(const char * infilename, text_t * text)
 
     readStrsFromFile(text);
     getStrNum(text);
-
     printf("strnum: %llu\n", text->strnum);
+    findStrsInText(text);
+}
+
+void delStrs(text_t * text)
+{
+    free(text->text);
+    free(text->strings);
+}
+
+int pointerStrCmp(const void * firstpointer, const void * secondpointer)
+{
+    const char * firststring  = *((const char * const *) firstpointer);
+    const char * secondstring = *((const char * const *) secondpointer);
+    return mystrcmp(firststring, secondstring);
+}
+
+void getStrNum(text_t * text)
+{
+    char * ptr = text->text;
+    while(*ptr != '\0'){
+        if (*ptr == '\n')
+            if (*(ptr + 1) != '\0')
+                text->strnum++;
+        ptr++;
+    }
+    text->strnum++;
+}
+
+void readStrsFromFile(text_t * text)
+{
+    fseek(text->textfile, 0, SEEK_END);
+    text->textlen = (size_t) ftell(text->textfile) + 1;
+    fseek(text->textfile, 0, SEEK_SET);
+
+    text->text = (char *)calloc(text->textlen, sizeof(char));
+    text->textlen = fread(text->text, sizeof(char), text->textlen, text->textfile) + 1;
+    text->text[text->textlen - 1] = '\0';
+    fclose(text->textfile);
+}
+
+void findStrsInText(text_t * text)
+{
     text->strings = (char **)calloc(text->strnum, sizeof(char *));
     text->strings[0] = text->text;
 
@@ -36,39 +77,11 @@ void getStrs(const char * infilename, text_t * text)
     }
 }
 
-void delStrs(text_t * text)
+void printStrsToFile(const char * outfilename, text_t * text)
 {
-    free(text->text);
-    free(text->strings);
-}
-
-int pointerStrCmp(const void * firstpointer, const void * secondpointer)
-{
-    const char * firststring  = *((const char **) firstpointer);
-    const char * secondstring = *((const char **) secondpointer);
-    return mystrcmp(firststring, secondstring);
-}
-
-void getStrNum(text_t * text)
-{
-    char * ptr = text->text;
-    while(*ptr != '\0'){
-        if (*ptr == '\n')
-            if (*(ptr + 1) != '\0')
-                text->strnum++;
-        ptr++;
+    FILE * outfile = fopen(outfilename, "w");
+    for (size_t index = 0; index < text->strnum; index++){
+        fprintf(outfile, "%s\n", text->strings[index]);
     }
-    text->strnum++;
-}
-
-void readStrsFromFile(text_t * text)
-{
-    fseek(text->textfile, 0, SEEK_END);
-    text->textlen = ftell(text->textfile) + 1;
-    fseek(text->textfile, 0, SEEK_SET);
-
-    text->text = (char *)calloc(text->textlen, sizeof(char));
-    text->textlen = fread(text->text, sizeof(char), text->textlen, text->textfile) + 1;
-    text->text[text->textlen - 1] = '\0';
-    fclose(text->textfile);
+    fclose(outfile);
 }
