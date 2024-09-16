@@ -6,6 +6,7 @@
 #include "onegin.h"
 #include "io_onegin.h"
 #include "sorting.h"
+//#include "debug.h"
 
 int main()
 {
@@ -14,8 +15,14 @@ int main()
 
     text_t strs = {};
     getStrs(infilename, &strs);
-    sortTime(quickSort, strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
-    quickSort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    // qsort(strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+    // printf("ordinary sorted? - %d\n", testSorting(&strs, pointerStrCmp));
+
+    //sortTime(quickSort, strs.strings, strs.strnum, sizeof(char *), pointerStrCmp);
+
+    quickSort(strs.strings, strs.strnum, sizeof(char *), pointerRevStrCmp);
+    printf("reverse sorted? - %ld\n", testSorting(&strs, pointerRevStrCmp));
+
     printStrsToFile(outfilename, &strs);
 
     delStrs(&strs);

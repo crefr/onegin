@@ -18,6 +18,8 @@ void readStrsFromFile(text_t * text);
 void findStrsInText(text_t * text);
 int pointerStrCmp(const void * firstpointer, const void * secondpointer);
 void printStrsToFile(const char * outfilename, text_t * text);
+int pointerRevStrCmp(const void *firstpointer, const void *secondpointer);
+ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *));
 
 
 #endif

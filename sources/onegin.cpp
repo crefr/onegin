@@ -4,7 +4,11 @@
 #include "mystring.h"
 #include "onegin.h"
 #include "io_onegin.h"
+
+#define NDEBUG
 #include "debug.h"
+
+#define MIN(a, b) ((a) < (b)) ? (a) : (b)
 
 void getStrs(const char * infilename, text_t * text)
 {
@@ -27,6 +31,35 @@ int pointerStrCmp(const void * firstpointer, const void * secondpointer)
     const char * firststring  = *((const char * const *) firstpointer);
     const char * secondstring = *((const char * const *) secondpointer);
     return mystrcmp(firststring, secondstring);
+}
+
+int pointerRevStrCmp(const void *firstpointer, const void *secondpointer)
+{
+    const char * firststring  = *((const char * const *) firstpointer);
+    const char * secondstring = *((const char * const *) secondpointer);
+
+    dprintf("%s\n", firststring);
+    dprintf("%s\n", secondstring);
+
+    const char * nowfirst  = firststring;
+    const char * nowsecond = secondstring;
+
+    while (*nowfirst  != '\0') nowfirst++;
+    while (*nowsecond != '\0') nowsecond++;
+
+    if (nowfirst  - firststring  != 0) nowfirst--;
+    if (nowsecond - secondstring != 0) nowsecond--;
+
+    while ((nowfirst >= firststring && nowsecond >= secondstring) && *nowfirst == *nowsecond){
+        nowfirst--;
+        nowsecond--;
+    }
+
+    if (nowfirst < firststring || nowsecond < secondstring)
+        return (int)((nowfirst - firststring) - (nowsecond - secondstring));
+
+    dprintf("result: %d\n", *nowfirst - *nowsecond);
+    return *nowfirst - *nowsecond;
 }
 
 void getStrNum(text_t * text)
@@ -84,4 +117,13 @@ void printStrsToFile(const char * outfilename, text_t * text)
         fprintf(outfile, "%s\n", text->strings[index]);
     }
     fclose(outfile);
+}
+
+ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *))
+{
+    for(size_t strindex = 0; strindex < strs->strnum - 1; strindex++){
+        if (cmp(strs->strings + strindex, strs->strings + strindex + 1) > 0)
+            return strindex; // failed
+    }
+    return -1; // success
 }

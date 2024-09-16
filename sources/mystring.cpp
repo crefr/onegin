@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#define NDEBUG
 #include <assert.h>
 
 #include "mystring.h"
