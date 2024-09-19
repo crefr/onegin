@@ -199,7 +199,7 @@ size_t qsortPartition(void * base, size_t len, size_t elemsize, int (*cmp)(const
 
 void sortTime(sortFunction_t sort, void * base, size_t len, size_t elemsize, int (*cmp)(const void *, const void *))
 {
-    const clock_t TESTTIME = 3 * CLOCKS_PER_SEC;
+    const clock_t TESTTIME = 10 * CLOCKS_PER_SEC;
     double sumofSqT = 0;
     double sumofT   = 0;
 

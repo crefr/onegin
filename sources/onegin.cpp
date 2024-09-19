@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "mystring.h"
 #include "onegin.h"
 #include "io_onegin.h"
 
 #define NDEBUG
+#include <assert.h>
 #include "debug.h"
-
-#define MIN(a, b) ((a) < (b)) ? (a) : (b)
 
 void getStrs(const char * infilename, text_t * text)
 {
@@ -24,42 +24,6 @@ void delStrs(text_t * text)
 {
     free(text->text);
     free(text->strings);
-}
-
-int pointerStrCmp(const void * firstpointer, const void * secondpointer)
-{
-    const char * firststring  = *((const char * const *) firstpointer);
-    const char * secondstring = *((const char * const *) secondpointer);
-    return mystrcmp(firststring, secondstring);
-}
-
-int pointerRevStrCmp(const void *firstpointer, const void *secondpointer)
-{
-    const char * firststring  = *((const char * const *) firstpointer);
-    const char * secondstring = *((const char * const *) secondpointer);
-
-    dprintf("%s\n", firststring);
-    dprintf("%s\n", secondstring);
-
-    const char * nowfirst  = firststring;
-    const char * nowsecond = secondstring;
-
-    while (*nowfirst  != '\0') nowfirst++;
-    while (*nowsecond != '\0') nowsecond++;
-
-    if (nowfirst  - firststring  != 0) nowfirst--;
-    if (nowsecond - secondstring != 0) nowsecond--;
-
-    while ((nowfirst >= firststring && nowsecond >= secondstring) && *nowfirst == *nowsecond){
-        nowfirst--;
-        nowsecond--;
-    }
-
-    if (nowfirst < firststring || nowsecond < secondstring)
-        return (int)((nowfirst - firststring) - (nowsecond - secondstring));
-
-    dprintf("result: %d\n", *nowfirst - *nowsecond);
-    return *nowfirst - *nowsecond;
 }
 
 void getStrNum(text_t * text)
@@ -91,6 +55,8 @@ void findStrsInText(text_t * text)
     text->strings = (char **)calloc(text->strnum, sizeof(char *));
     text->strings[0] = text->text;
 
+    text->endstrings = (char **)calloc(text->strnum, sizeof(char *));
+
     size_t strindex = 1;
     char * ptr = text->text;
     while(*ptr != '\0'){
@@ -100,8 +66,11 @@ void findStrsInText(text_t * text)
                 break;
             case '\n':
                 *ptr = '\0';
-                if(strindex < text->strnum)
-                    text->strings[strindex++] = ptr + 1;
+                if(strindex < text->strnum){
+                    text->strings[strindex] = ptr + 1;
+                    text->endstrings[strindex] = ptr - 1;
+                    strindex++;
+                }
                 break;
             default:
                 break;
@@ -126,4 +95,72 @@ ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *))
             return strindex; // failed
     }
     return -1; // success
+}
+
+
+int pointerStrCmp(const void * firstpointer, const void * secondpointer)
+{
+    const char * firststring  = *((const char * const *) firstpointer);
+    const char * secondstring = *((const char * const *) secondpointer);
+    return mystrcmp(firststring, secondstring);
+}
+
+int pointerRevStrCmp(const void *firstpointer, const void *secondpointer)
+{
+    const char * firststring  = *((const char * const *) firstpointer);
+    const char * secondstring = *((const char * const *) secondpointer);
+    return revStrCmp(firststring, secondstring);
+}
+
+int ptrAdvancedStrCmp(const void * firstpointer, const void * secondpointer)
+{
+    const char * firststring  = *((const char * const *) firstpointer);
+    const char * secondstring = *((const char * const *) secondpointer);
+    return advancedStrCmp(firststring, secondstring);
+}
+
+int revStrCmp(const char *firststring, const char * secondstring)
+{
+    const char * nowfirst  = firststring;
+    const char * nowsecond = secondstring;
+
+    while (*nowfirst  != '\0') nowfirst++;
+    while (*nowsecond != '\0') nowsecond++;
+
+    if (nowfirst  - firststring  != 0) nowfirst--;
+    if (nowsecond - secondstring != 0) nowsecond--;
+
+    while ((nowfirst >= firststring && nowsecond >= secondstring) && *nowfirst == *nowsecond){
+        nowfirst--;
+        nowsecond--;
+    }
+
+    if (nowfirst < firststring || nowsecond < secondstring)
+        return (int)((nowfirst - firststring) - (nowsecond - secondstring));
+
+    dprintf("result: %d\n", *nowfirst - *nowsecond);
+    return *nowfirst - *nowsecond;
+}
+
+
+int advancedStrCmp(const char *firststring, const char *secondstring)
+{
+    assert(firststring  != NULL);
+    assert(secondstring != NULL);
+
+    size_t i = 0;
+    size_t j = 0;
+
+    while(firststring[i] != '\0' && toupper(firststring[i]) == toupper(secondstring[j]))
+    {
+        if (!isalpha(firststring[i]))
+            i++;
+        else if (!isalpha(secondstring[j]))
+            j++;
+        else{
+            i++;
+            j++;
+        }
+    }
+    return toupper(firststring[i]) - toupper(secondstring[j]);
 }
