@@ -32,7 +32,7 @@ endif
 
 # all: $(FILENAME)
 
-$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)debug.o $(OBJDIR)io_onegin.o
+$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)debug.o $(OBJDIR)io_onegin.o $(OBJDIR)argvprocessing.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(OBJDIR)main.o: $(SRCDIR)main.cpp $(HEADDIR)mystring.h $(HEADDIR)sorting.h $(HEADDIR)onegin.h $(HEADDIR)io_onegin.h
@@ -51,6 +51,9 @@ $(OBJDIR)debug.o: $(SRCDIR)debug.cpp $(HEADDIR)debug.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)io_onegin.o: $(SRCDIR)io_onegin.cpp $(HEADDIR)io_onegin.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)argvprocessing.o: $(SRCDIR)argvprocessing.cpp $(HEADDIR)argvprocessing.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

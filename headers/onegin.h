@@ -1,16 +1,21 @@
 #ifndef ONEGIN_INCLUDED
 #define ONEGIN_INCLUDED
 
-struct text_{
+
+typedef struct str_{
+    char * start;
+    char * end;
+} str_t;
+
+typedef struct text_{
     FILE * textfile;
     char * text;
     size_t textlen;
-    char ** strings;
-    char ** endstrings;
+    str_t * strings;
     size_t strnum;
+} text_t;
 
-};
-typedef struct text_ text_t;
+//typedef struct text_ text_t;
 
 void getStrs(const char * infilename, text_t *text);
 void delStrs(text_t *text);

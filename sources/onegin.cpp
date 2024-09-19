@@ -6,9 +6,11 @@
 #include "onegin.h"
 #include "io_onegin.h"
 
-#define NDEBUG
+//#define NDEBUG
 #include <assert.h>
 #include "debug.h"
+
+bool isLetter(char symbol);
 
 void getStrs(const char * infilename, text_t * text)
 {
@@ -52,12 +54,10 @@ void readStrsFromFile(text_t * text)
 
 void findStrsInText(text_t * text)
 {
-    text->strings = (char **)calloc(text->strnum, sizeof(char *));
-    text->strings[0] = text->text;
+    text->strings = (str_t *)calloc(text->strnum, sizeof(str_t));
+    text->strings[0].start = text->text;
 
-    text->endstrings = (char **)calloc(text->strnum, sizeof(char *));
-
-    size_t strindex = 1;
+    size_t strindex = 0;
     char * ptr = text->text;
     while(*ptr != '\0'){
         switch(*ptr){
@@ -67,8 +67,8 @@ void findStrsInText(text_t * text)
             case '\n':
                 *ptr = '\0';
                 if(strindex < text->strnum){
-                    text->strings[strindex] = ptr + 1;
-                    text->endstrings[strindex] = ptr - 1;
+                    text->strings[strindex].start = ptr + 1;
+                    text->strings[text->strnum - 1 - strindex].end = ptr - 1;
                     strindex++;
                 }
                 break;
@@ -83,7 +83,7 @@ void printStrsToFile(const char * outfilename, text_t * text)
 {
     FILE * outfile = fopen(outfilename, "w");
     for (size_t index = 0; index < text->strnum; index++){
-        fprintf(outfile, "%s\n", text->strings[index]);
+        fprintf(outfile, "%s\n", text->strings[index].start);
     }
     fclose(outfile);
 }
@@ -100,23 +100,23 @@ ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *))
 
 int pointerStrCmp(const void * firstpointer, const void * secondpointer)
 {
-    const char * firststring  = *((const char * const *) firstpointer);
-    const char * secondstring = *((const char * const *) secondpointer);
-    return mystrcmp(firststring, secondstring);
+    str_t firststring  = *((str_t *) firstpointer);
+    str_t secondstring = *((str_t *) secondpointer);
+    return mystrcmp(firststring.start, secondstring.start);
 }
 
 int pointerRevStrCmp(const void *firstpointer, const void *secondpointer)
 {
-    const char * firststring  = *((const char * const *) firstpointer);
-    const char * secondstring = *((const char * const *) secondpointer);
-    return revStrCmp(firststring, secondstring);
+    str_t firststring  = *((str_t *) firstpointer);
+    str_t secondstring = *((str_t *) secondpointer);
+    return revStrCmp(firststring.start, secondstring.start);
 }
 
 int ptrAdvancedStrCmp(const void * firstpointer, const void * secondpointer)
 {
-    const char * firststring  = *((const char * const *) firstpointer);
-    const char * secondstring = *((const char * const *) secondpointer);
-    return advancedStrCmp(firststring, secondstring);
+    str_t firststring  = *((str_t *) firstpointer);
+    str_t secondstring = *((str_t *) secondpointer);
+    return advancedStrCmp(firststring.start, secondstring.start);
 }
 
 int revStrCmp(const char *firststring, const char * secondstring)
@@ -148,19 +148,36 @@ int advancedStrCmp(const char *firststring, const char *secondstring)
     assert(firststring  != NULL);
     assert(secondstring != NULL);
 
-    size_t i = 0;
-    size_t j = 0;
+    const char * nowfirst  = firststring;
+    const char * nowsecond = secondstring;
 
-    while(firststring[i] != '\0' && toupper(firststring[i]) == toupper(secondstring[j]))
+    while(*nowfirst != '\0' && *nowsecond != '\0')
     {
-        if (!isalpha(firststring[i]))
-            i++;
-        else if (!isalpha(secondstring[j]))
-            j++;
-        else{
-            i++;
-            j++;
+        while (!isLetter(*nowfirst)){
+            //dprintf("%c(%d)", *nowfirst, *nowfirst);
+            if (*nowfirst == '\0')
+                break;
+            nowfirst++;
+        }
+        while (!isLetter(*nowsecond)){
+            //dprintf("%c(%d)", *nowsecond, *nowsecond);
+            if (*nowsecond == '\0')
+                break;
+            nowsecond++;
+        }
+
+
+        if (isLetter(*nowfirst) && isLetter(*nowsecond)){
+            if (*nowfirst != *nowsecond)
+                break;
+            nowfirst++;
+            nowsecond++;
         }
     }
-    return toupper(firststring[i]) - toupper(secondstring[j]);
+    return toupper(*nowfirst) - toupper(*nowsecond);
+}
+
+bool isLetter(char symbol)
+{
+    return (isalpha(symbol)) || (symbol == ' ');
 }

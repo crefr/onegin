@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define NDEBUG
+//#define NDEBUG
 #include <assert.h>
 
 #include "mystring.h"
