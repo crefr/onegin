@@ -6,25 +6,32 @@
 #include "onegin.h"
 #include "io_onegin.h"
 
-//#define NDEBUG
+#define NDEBUG
 #include <assert.h>
 #include "debug.h"
 
-bool isLetter(char symbol);
+// #define MAX(a,b) ((a) > (b)) ? (a) : (b)
 
-void getStrs(const char * infilename, text_t * text)
+bool isLetter(char symbol);
+void getStrNum(text_t * text);
+void findStrsInText(text_t * text);
+
+int getStrs(const char * infilename, text_t * text)
 {
     text->textfile = fopen(infilename, "r");
+    if (text->textfile == NULL)
+        return ONEGINFILEERROR;
 
     readStrsFromFile(text);
     getStrNum(text);
     printf("strnum: %llu\n", text->strnum);
     findStrsInText(text);
+    return ONEGINSUCCESS;
 }
 
 void delStrs(text_t * text)
 {
-    free(text->text);
+    free(text->text - 1);
     free(text->strings);
 }
 
@@ -40,24 +47,12 @@ void getStrNum(text_t * text)
     text->strnum++;
 }
 
-void readStrsFromFile(text_t * text)
-{
-    fseek(text->textfile, 0, SEEK_END);
-    text->textlen = (size_t) ftell(text->textfile) + 1;
-    fseek(text->textfile, 0, SEEK_SET);
-
-    text->text = (char *)calloc(text->textlen, sizeof(char));
-    text->textlen = fread(text->text, sizeof(char), text->textlen, text->textfile) + 1;
-    text->text[text->textlen - 1] = '\0';
-    fclose(text->textfile);
-}
-
 void findStrsInText(text_t * text)
 {
     text->strings = (str_t *)calloc(text->strnum, sizeof(str_t));
     text->strings[0].start = text->text;
 
-    size_t strindex = 0;
+    size_t strindex = 1;
     char * ptr = text->text;
     while(*ptr != '\0'){
         switch(*ptr){
@@ -68,7 +63,7 @@ void findStrsInText(text_t * text)
                 *ptr = '\0';
                 if(strindex < text->strnum){
                     text->strings[strindex].start = ptr + 1;
-                    text->strings[text->strnum - 1 - strindex].end = ptr - 1;
+                    text->strings[strindex - 1].end = ptr;
                     strindex++;
                 }
                 break;
@@ -77,15 +72,7 @@ void findStrsInText(text_t * text)
         }
         ptr++;
     }
-}
-
-void printStrsToFile(const char * outfilename, text_t * text)
-{
-    FILE * outfile = fopen(outfilename, "w");
-    for (size_t index = 0; index < text->strnum; index++){
-        fprintf(outfile, "%s\n", text->strings[index].start);
-    }
-    fclose(outfile);
+    text->strings[text->strnum - 1].end = ptr - 1;
 }
 
 ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *))
@@ -114,10 +101,16 @@ int pointerRevStrCmp(const void *firstpointer, const void *secondpointer)
 
 int ptrAdvancedStrCmp(const void * firstpointer, const void * secondpointer)
 {
-    str_t firststring  = *((str_t *) firstpointer);
-    str_t secondstring = *((str_t *) secondpointer);
-    return advancedStrCmp(firststring.start, secondstring.start);
+    str_t * firststring  = (str_t *) firstpointer;
+    str_t * secondstring = (str_t *) secondpointer;
+    return advancedStrCmp(firststring->start, secondstring->start);
 }
+
+int ptrAdvancedRevStrCmp(const void * firstpointer, const void * secondpointer)
+{
+    return advancedRevStrCmp((str_t *)firstpointer, (str_t *)secondpointer);
+}
+
 
 int revStrCmp(const char *firststring, const char * secondstring)
 {
@@ -154,24 +147,56 @@ int advancedStrCmp(const char *firststring, const char *secondstring)
     while(*nowfirst != '\0' && *nowsecond != '\0')
     {
         while (!isLetter(*nowfirst)){
-            //dprintf("%c(%d)", *nowfirst, *nowfirst);
             if (*nowfirst == '\0')
                 break;
             nowfirst++;
         }
         while (!isLetter(*nowsecond)){
-            //dprintf("%c(%d)", *nowsecond, *nowsecond);
             if (*nowsecond == '\0')
                 break;
             nowsecond++;
         }
-
 
         if (isLetter(*nowfirst) && isLetter(*nowsecond)){
             if (*nowfirst != *nowsecond)
                 break;
             nowfirst++;
             nowsecond++;
+        }
+    }
+    return toupper(*nowfirst) - toupper(*nowsecond);
+}
+
+int advancedRevStrCmp(str_t *firststring, str_t *secondstring)
+{
+    assert(firststring  != NULL);
+    assert(secondstring != NULL);
+
+    const char * nowfirst  = firststring ->end - 1;
+    const char * nowsecond = secondstring->end - 1;
+
+    while(nowfirst >= firststring->start && nowsecond >= secondstring->start && (*nowfirst != '\0' || *nowsecond != '\0'))
+    {
+        while (!isLetter(*nowfirst)){
+            if (*nowfirst == '\0')
+                break;
+            nowfirst--;
+        }
+        while (!isLetter(*nowsecond)){
+            if (*nowsecond == '\0')
+                break;
+            nowsecond--;
+        }
+
+        if (*nowsecond == '\0' || *nowfirst == '\0'){
+            break;
+        }
+
+        if (isLetter(*nowfirst) && isLetter(*nowsecond)){
+            if (toupper(*nowfirst) != toupper(*nowsecond))
+                break;
+            nowfirst--;
+            nowsecond--;
         }
     }
     return toupper(*nowfirst) - toupper(*nowsecond);

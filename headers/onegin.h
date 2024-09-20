@@ -15,20 +15,22 @@ typedef struct text_{
     size_t strnum;
 } text_t;
 
+enum oneginstatus{ONEGINSUCCESS = 0, ONEGINFILEERROR};
 //typedef struct text_ text_t;
 
-void getStrs(const char * infilename, text_t *text);
+int getStrs(const char * infilename, text_t *text);
 void delStrs(text_t *text);
-void getStrNum(text_t * text);
-void readStrsFromFile(text_t * text);
-void findStrsInText(text_t * text);
-int pointerStrCmp(const void * firstpointer, const void * secondpointer);
-void printStrsToFile(const char * outfilename, text_t * text);
-int pointerRevStrCmp(const void *firstpointer, const void *secondpointer);
 ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *));
-int advancedStrCmp(const char *firststring, const char *secondstring);
-int ptrAdvancedStrCmp(const void * firstpointer, const void * secondpointer);
-int revStrCmp(const char *firststring, const char * secondstring);
 
+int advancedStrCmp(const char *firststring, const char *secondstring);
+int ptrAdvancedRevStrCmp(const void * firstpointer, const void * secondpointer);
+
+int pointerStrCmp(const void * firstpointer, const void * secondpointer);
+
+int revStrCmp(const char *firststring, const char * secondstring);
+int pointerRevStrCmp(const void *firstpointer, const void *secondpointer);
+
+int advancedRevStrCmp(str_t * firststring, str_t * secondstring);
+int ptrAdvancedStrCmp(const void * firstpointer, const void * secondpointer);
 
 #endif
