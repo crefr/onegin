@@ -162,9 +162,9 @@ void quickSort(void * base, size_t len, size_t elemsize, int (*cmp)(const void *
         return;
     }
 
-    dprintf("len: %llu\n", len);
+    dprintf("len: %lu\n", len);
     size_t sepindex = qsortPartition(base, len, elemsize, cmp);
-    dprintf("sepindex: %llu\n", sepindex);
+    dprintf("sepindex: %lu\n", sepindex);
     quickSort(base, sepindex + 1, elemsize, cmp);
     dprintf("first!\n");
     quickSort((char *)base + (sepindex + 1) * elemsize, len - sepindex - 1, elemsize, cmp);
@@ -225,5 +225,5 @@ void sortTime(sortFunction_t sort, void * base, size_t len, size_t elemsize, int
     double sigmaT = sqrt((averageSqT - averageT * averageT) / (double)numofsorts);
     double percentSigmaT = sigmaT / averageT * 100;
 
-    printf("sorting time is %lg +- %lg ms (%.1lf%%) (average of %llu measures)\n", averageT, sigmaT, percentSigmaT, numofsorts);
+    printf("sorting time is %lg +- %lg ms (%.1lf%%) (average of %lu measures)\n", averageT, sigmaT, percentSigmaT, numofsorts);
 }

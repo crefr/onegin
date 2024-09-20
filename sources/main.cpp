@@ -3,9 +3,10 @@
 
 #include "mystring.h"
 #include "onegin.h"
-//#include "io_onegin.h"
+#include "io_onegin.h"
 #include "sorting.h"
 #include "argvprocessing.h"
+#include "comparators.h"
 
 enum mainerrors{HELPEXIT = 0, INPUTFILEERROR, OUTPUTFILEERROR, CMDARGSERROR};
 
@@ -39,13 +40,14 @@ int main(int argc, char ** argv)
     qsort(strs.strings, strs.strnum, sizeof(str_t), ptrAdvancedStrCmp);
     printStrsToFile(outfile, &strs);
 
-    fprintf(outfile, terminator);
+    fprintf(outfile, "%s", terminator);
 
     quickSort(strs.strings, strs.strnum, sizeof(str_t), ptrAdvancedRevStrCmp);
     printf("reverse sorted? - %ld\n", testSorting(&strs, ptrAdvancedRevStrCmp));
     printStrsToFile(outfile, &strs);
 
-    fprintf(outfile, terminator);
+    fprintf(outfile, "%s", terminator);
+
     printOriginTextToFile(outfile, &strs);
 
     delStrs(&strs);

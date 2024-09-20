@@ -32,10 +32,10 @@ endif
 
 # all: $(FILENAME)
 
-$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)debug.o $(OBJDIR)io_onegin.o $(OBJDIR)argvprocessing.o
+$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)debug.o $(OBJDIR)io_onegin.o $(OBJDIR)argvprocessing.o $(OBJDIR)comparators.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-$(OBJDIR)main.o: $(SRCDIR)main.cpp $(HEADDIR)mystring.h $(HEADDIR)sorting.h $(HEADDIR)onegin.h $(HEADDIR)io_onegin.h
+$(OBJDIR)main.o: $(SRCDIR)main.cpp $(HEADDIR)mystring.h $(HEADDIR)sorting.h $(HEADDIR)onegin.h $(HEADDIR)io_onegin.h $(HEADDIR)comparators.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)mystring.o: $(SRCDIR)mystring.cpp $(HEADDIR)mystring.h
@@ -54,6 +54,9 @@ $(OBJDIR)io_onegin.o: $(SRCDIR)io_onegin.cpp $(HEADDIR)io_onegin.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)argvprocessing.o: $(SRCDIR)argvprocessing.cpp $(HEADDIR)argvprocessing.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)comparators.o: $(SRCDIR)comparators.cpp $(HEADDIR)comparators.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
