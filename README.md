@@ -27,15 +27,20 @@ In the folder should appear file `run.exe`.
 
 ## Usage
 
-As the program is compiled you can use it:
-
-```bash
-./run.exe -i input.txt -o output.txt
-```
-
-If you need help about using progran you can try to use `--help` (`-h`) flag:
-
+As the program is compiled you can use it.
+There are several flags that you can use:
+1. `-h` or `--help` program prints help message and exits. Usage:
 ```bash
 ./run.exe --help
 ./run.exe -h
 ```
+2. `-i` and `-o` defines input and output file. Usage:
+```bash
+./run.exe -i input.txt -o output.txt
+```
+3. `-t` switches program into time measurement mode.
+```bash
+./run.exe -i input.txt -t
+```
+
+

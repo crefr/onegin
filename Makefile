@@ -4,7 +4,7 @@ SRCDIR = sources/
 HEADDIR = headers/
 
 CC = g++
-BUILD  = LINUX
+BUILD  = RELEASE
 # windows
 CFLAGS_WINDOWS =-Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal -Winline						\
 		-Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-enum -Wswitch-default					\
@@ -36,13 +36,11 @@ else ifeq ($(BUILD),LINUX)
 	CFLAGS = $(CFLAGS_LINUX)
 else ifeq ($(BUILD),RELEASE)
 	CFLAGS = $(CFLAGS_RELEASE)
-else
-	echo "Wrong BUILD flag"
 endif
 
 # all: $(FILENAME)
 
-$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)debug.o $(OBJDIR)io_onegin.o $(OBJDIR)argvprocessing.o $(OBJDIR)comparators.o
+$(FILENAME): $(OBJDIR)main.o $(OBJDIR)mystring.o $(OBJDIR)sorting.o $(OBJDIR)onegin.o $(OBJDIR)io_onegin.o $(OBJDIR)argvprocessing.o $(OBJDIR)comparators.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(OBJDIR)main.o: $(SRCDIR)main.cpp $(HEADDIR)mystring.h $(HEADDIR)sorting.h $(HEADDIR)onegin.h $(HEADDIR)io_onegin.h $(HEADDIR)comparators.h
@@ -55,9 +53,6 @@ $(OBJDIR)sorting.o: $(SRCDIR)sorting.cpp $(HEADDIR)sorting.h $(HEADDIR)mystring.
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)onegin.o: $(SRCDIR)onegin.cpp $(HEADDIR)onegin.h $(HEADDIR)mystring.h $(HEADDIR)io_onegin.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJDIR)debug.o: $(SRCDIR)debug.cpp $(HEADDIR)debug.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)io_onegin.o: $(SRCDIR)io_onegin.cpp $(HEADDIR)io_onegin.h

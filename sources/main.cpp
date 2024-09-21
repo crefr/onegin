@@ -24,11 +24,6 @@ int main(int argc, char ** argv)
     }
 
     const char *infilename  = flagvalues[I_flag].str;
-    FILE * outfile = fopen(flagvalues[O_flag].str, "w");
-    if (outfile == NULL){
-        printf("outfile ERROR\n");
-        return OUTPUTFILEERROR;
-    }
 
     const char * terminator = "__________________________________________________________________________________________\n\n";
     text_t strs = {};
@@ -38,9 +33,15 @@ int main(int argc, char ** argv)
     }
 
     if (flagvalues[T_flag].bl){
-        sortTime(qsort, strs.strings, strs.strnum, sizeof(str_t), pointerStrCmp);
+        sortTime(quickSort, strs.strings, strs.strnum, sizeof(str_t), ptrAdvancedStrCmp);
         delStrs(&strs);
         return SORTTIMEEXIT;
+    }
+
+    FILE * outfile = fopen(flagvalues[O_flag].str, "w");
+    if (outfile == NULL){
+        printf("outfile ERROR\n");
+        return OUTPUTFILEERROR;
     }
 
     qsort(strs.strings, strs.strnum, sizeof(str_t), ptrAdvancedStrCmp);
