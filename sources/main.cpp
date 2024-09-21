@@ -7,11 +7,15 @@
 #include "sorting.h"
 #include "argvprocessing.h"
 #include "comparators.h"
+#include "logger.h"
 
 enum mainstatus{HELPEXIT = 0, SORTTIMEEXIT = 0, INPUTFILEERROR, OUTPUTFILEERROR, CMDARGSERROR};
 
 int main(int argc, char ** argv)
 {
+    FILE * logfile = fopen("log.txt", "a+");
+    logStart(logfile, 2);
+    logPrint(2, "HELLO\n");
     fvals_t flagvalues[ARGVNUM] = {};
     if (argvReceive(argc, argv, flagvalues) == ARGBAD){
         printf("cmd args error\n");
@@ -50,7 +54,7 @@ int main(int argc, char ** argv)
     fprintf(outfile, "%s", terminator);
 
     quickSort(strs.strings, strs.strnum, sizeof(str_t), ptrAdvancedRevStrCmp);
-    printf("reverse sorted? - %ld\n", testSorting(&strs, ptrAdvancedRevStrCmp));
+    //printf("reverse sorted? - %ld\n", testSorting(&strs, ptrAdvancedRevStrCmp));
     printStrsToFile(outfile, &strs);
 
     fprintf(outfile, "%s", terminator);
@@ -59,5 +63,6 @@ int main(int argc, char ** argv)
 
     delStrs(&strs);
     fclose(outfile);
+    fclose(logfile);
     return 0;
 }

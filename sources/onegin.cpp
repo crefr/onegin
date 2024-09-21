@@ -31,6 +31,8 @@ int getStrs(const char * infilename, text_t * text)
         return ONEGINFILEERROR;
 
     readStrsFromFile(text);
+
+    fclose(text->textfile);
     getStrNum(text);
     printf("strnum: %lu\n", text->strnum);
     findStrsInText(text);

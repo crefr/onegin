@@ -100,7 +100,9 @@ int advancedRevStrCmp(const str_t * firststring, const str_t * secondstring)
     const char * nowfirst  = firststring ->end - 1;
     const char * nowsecond = secondstring->end - 1;
 
-    while(nowfirst >= firststring->start && nowsecond >= secondstring->start && (*nowfirst != '\0' || *nowsecond != '\0'))
+    while(nowfirst  >= firststring ->start &&
+          nowsecond >= secondstring->start &&
+          (*nowfirst != '\0' || *nowsecond != '\0'))
     {
         while (!isLetter(*nowfirst)){
             if (*nowfirst == '\0')

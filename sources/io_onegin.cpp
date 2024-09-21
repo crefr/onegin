@@ -31,5 +31,4 @@ void readStrsFromFile(text_t * text)
     text->text = (char *)calloc(text->textlen + 1, sizeof(char)) + 1;
     text->textlen = fread(text->text, sizeof(char), text->textlen, text->textfile) + 1;
     text->text[text->textlen - 1] = '\0';
-    fclose(text->textfile);
 }
