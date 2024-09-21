@@ -10,9 +10,18 @@
 #include <assert.h>
 #include "debug.h"
 
-// #define MAX(a,b) ((a) > (b)) ? (a) : (b)
-
+/**
+ * @brief Returns number of strings in text.
+ *
+ * @param text
+ */
 void getStrNum(text_t * text);
+
+/**
+ * @brief Fills strings array in text_t with pointes to beginnings and endings of strings.
+ *
+ * @param text
+ */
 void findStrsInText(text_t * text);
 
 int getStrs(const char * infilename, text_t * text)

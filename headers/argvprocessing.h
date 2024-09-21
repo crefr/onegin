@@ -23,13 +23,14 @@ typedef union fvals
 } fvals_t;
 
 enum valtypes {V_NOTDEF = 0, V_BOOL, V_STRING, V_DOUBLE, V_INT};
-enum flagsletters{H_flag, HELP_flag, I_flag, O_flag};
+enum flagsletters{H_flag, HELP_flag, I_flag, O_flag, T_flag};
 const struct argvEx_t args[] =
 {
     {.valtype = V_NOTDEF,       .fname = "-h",          .help = "standard --help"},
     {.valtype = V_NOTDEF,       .fname = "--help",      .help = "standard --help"},
     {.valtype = V_STRING,       .fname = "-i",          .help = "defines input  file for sorting (-i itest.txt)"},
-    {.valtype = V_STRING,       .fname = "-o",          .help = "defines output file for sorting (-o otest.txt)"}
+    {.valtype = V_STRING,       .fname = "-o",          .help = "defines output file for sorting (-o otest.txt)"},
+    {.valtype = V_NOTDEF,       .fname = "-t",          .help = "switches program mode to time of sorting measurement mode"}
 };
 const int ARGVNUM = sizeof(args) / sizeof(argvEx_t);
 
@@ -49,7 +50,7 @@ int argvReceive(const int argc, char **argv, union fvals *fval);
 int fillFval(char **argv, const int argindex, union fvals *fval, const int flagindex);
 
  //! @brief Печатает --help, берет данные из args, определенной в argvprocessing.cpp
-void printHelp();
+void printHelp(void);
 
 
 #endif

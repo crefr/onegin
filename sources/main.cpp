@@ -8,7 +8,7 @@
 #include "argvprocessing.h"
 #include "comparators.h"
 
-enum mainerrors{HELPEXIT = 0, INPUTFILEERROR, OUTPUTFILEERROR, CMDARGSERROR};
+enum mainstatus{HELPEXIT = 0, SORTTIMEEXIT = 0, INPUTFILEERROR, OUTPUTFILEERROR, CMDARGSERROR};
 
 int main(int argc, char ** argv)
 {
@@ -35,6 +35,12 @@ int main(int argc, char ** argv)
     if (getStrs(infilename, &strs) == ONEGINFILEERROR){
         printf("inputfile ERROR\n");
         return INPUTFILEERROR;
+    }
+
+    if (flagvalues[T_flag].bl){
+        sortTime(qsort, strs.strings, strs.strnum, sizeof(str_t), pointerStrCmp);
+        delStrs(&strs);
+        return SORTTIMEEXIT;
     }
 
     qsort(strs.strings, strs.strnum, sizeof(str_t), ptrAdvancedStrCmp);

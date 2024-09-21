@@ -15,10 +15,30 @@ typedef struct text_{
 } text_t;
 
 enum oneginstatus{ONEGINSUCCESS = 0, ONEGINFILEERROR};
-//typedef struct text_ text_t;
 
+/**
+ * @brief Fully fills text_t structure.
+ *
+ * @param infilename
+ * @param text
+ * @return int
+ */
 int getStrs(const char * infilename, text_t *text);
+
+/**
+ * @brief Deletes text_t structure.
+ *
+ * @param text
+ */
 void delStrs(text_t *text);
+
+/**
+ * @brief Function that tests if strings at text_t are sorted.
+ *
+ * @param strs
+ * @param cmp
+ * @return ssize_t
+ */
 ssize_t testSorting(text_t *strs, int (*cmp)(const void *, const void *));
 
 #endif

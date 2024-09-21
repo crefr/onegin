@@ -1,10 +1,6 @@
 #ifndef MYSTRING_INCLUDED
 #define MYSTRING_INCLUDED
 
-// #ifndef size_t
-//     typedef unsigned long long int size_t;
-// #endif
-
 /**
  * @brief Функция копирует Си-строку srcptr, включая завершающий нулевой символ в строку назначения, на которую ссылается указатель destptr
  *
