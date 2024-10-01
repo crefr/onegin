@@ -13,12 +13,13 @@ enum mainstatus{HELPEXIT = 0, SORTTIMEEXIT = 0, INPUTFILEERROR, OUTPUTFILEERROR,
 
 int main(int argc, char ** argv)
 {
-    FILE * logfile = fopen("log.txt", "a+");
-    logStart(logfile, 2);
-    logPrint(2, "HELLO\n");
+    logStart("log.txt", 1);
+    LOGPRINT(2, "HELLO");
     fvals_t flagvalues[ARGVNUM] = {};
     if (argvReceive(argc, argv, flagvalues) == ARGBAD){
+        LOGPRINT(0, "cmd args error");
         printf("cmd args error\n");
+        LOGEXIT();
         return CMDARGSERROR;
     }
 
@@ -63,6 +64,6 @@ int main(int argc, char ** argv)
 
     delStrs(&strs);
     fclose(outfile);
-    fclose(logfile);
+    LOGEXIT();
     return 0;
 }

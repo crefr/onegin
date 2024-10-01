@@ -1,12 +1,22 @@
 #ifndef LOGGER_INCLUDED
 #define LOGGER_INCLUDED
 
-#define LOGPRINT(loglevel, ...) \
-        logPrint(loglevel, __VA_ARGS__)
+#define LOGPRINT(loglevel, ...)                  \
+        do{                                      \
+                logPrintTime(loglevel);          \
+                logPrint(loglevel, __VA_ARGS__); \
+        }while(0)
 
-void logStart(FILE * logfile, int loglevel);
+#define LOGEXIT()                                                       \
+        do{                                                             \
+                logPrint(0, "\n<-----------ENDING------------>\n");     \
+                logExit();                                              \
+        }while(0)
+
+void logStart(const char * logfile, int loglevel);
 void logPrint(int loglevel, const char * fmt, ...);
-void logPrintTime(void);
+void logPrintTime(int loglevel);
+void logExit(void);
 
 
 /// @brief different levels of logging, IT IS NECESSARY TO WRITE THEM IN ASCENDING ORDER
